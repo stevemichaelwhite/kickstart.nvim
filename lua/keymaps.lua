@@ -40,3 +40,4 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 
 vim.keymap.set('n', '<leader>n', ':bnext<CR>', { desc = '[N]ext buffer' })
 vim.keymap.set('n', '<leader>p', ':bprevious<CR>', { desc = '[P]revious buffer' })
+vim.keymap.set('n', '<leader>rp', '<cmd>vsplit | term ipython --no-autoindent<CR>', { desc = 'Open a vsplit [R]EPL [P]ython' })

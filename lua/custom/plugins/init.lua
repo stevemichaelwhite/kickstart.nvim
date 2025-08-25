@@ -36,7 +36,7 @@ return {
             column = 100,
             -- Maximum duration for a movement (in ms). Automatically scales the
             -- delay and step size
-            time = 500,
+            time = 400,
           },
           step_size = {
             vertical = 1,
@@ -82,5 +82,18 @@ return {
         desc = 'Quickfix List (Trouble)',
       },
     },
+  },
+  {
+    'benomahony/uv.nvim',
+    opts = {
+      picker_integration = true,
+    },
+  },
+  {
+    'jpalardy/vim-slime',
+    init = function()
+      vim.g.slime_target = 'neovim'
+    end,
+    -- config =
   },
 }
