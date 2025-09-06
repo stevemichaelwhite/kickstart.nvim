@@ -152,6 +152,11 @@ vim.o.splitbelow = true
 --   and `:help lua-options-guide`
 vim.o.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+-- tab specs:
+vim.opt.expandtab = true
+vim.opt.shiftwidth = 4 -- number of spaces to use for each indent step
+vim.opt.tabstop = 4 -- number of spaces tabs count for
+vim.opt.softtabstop = 4 -- number of spaces a <Tab> feels like
 -- Added for bufferline plugin:
 vim.opt.termguicolors = true
 -- Preview substitutions live, as you type!
