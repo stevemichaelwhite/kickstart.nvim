@@ -152,7 +152,8 @@ vim.o.splitbelow = true
 --   and `:help lua-options-guide`
 vim.o.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
-
+-- Added for bufferline plugin:
+vim.opt.termguicolors = true
 -- Preview substitutions live, as you type!
 vim.o.inccommand = 'split'
 
@@ -639,7 +640,7 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        pyright = {},
+        basedpyright = {},
         ruff = {},
         rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
