@@ -141,6 +141,8 @@ vim.o.timeoutlen = 300
 -- Configure how new splits should be opened
 vim.o.splitright = true
 vim.o.splitbelow = true
+-- Do not save buffers in the session
+-- vim.o.sessionoptions = 'blank,curdir,folds,help,tabpages,winsize,terminal'
 
 -- Sets how neovim will display certain whitespace characters in the editor.
 --  See `:help 'list'`

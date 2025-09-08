@@ -41,3 +41,10 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 vim.keymap.set('n', '<leader>n', ':bnext<CR>', { desc = '[N]ext buffer' })
 vim.keymap.set('n', '<leader>p', ':bprevious<CR>', { desc = '[P]revious buffer' })
 vim.keymap.set('n', '<leader>rp', '<cmd>vsplit | term ipython --no-autoindent<CR>', { desc = 'Open a vsplit [R]EPL [P]ython' })
+vim.keymap.set('n', '<C-x>', ':bd<CR>', { desc = 'Close current buffer' })
+vim.keymap.set('n', '<C-s>', ':mksession! .session.vim<CR>', { desc = 'Save session state.' })
+
+vim.keymap.set('n', '<leader>tv', function()
+    local new_config = not vim.diagnostic.config().virtual_lines
+    vim.diagnostic.config { virtual_lines = new_config }
+end, { desc = '[T]oggle diagnostic [V]irtual lines' })
