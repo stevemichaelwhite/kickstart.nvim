@@ -48,3 +48,7 @@ vim.keymap.set('n', '<leader>tv', function()
     local new_config = not vim.diagnostic.config().virtual_lines
     vim.diagnostic.config { virtual_lines = new_config }
 end, { desc = '[T]oggle diagnostic [V]irtual lines' })
+
+vim.keymap.set('n', '<leader>td', function()
+    vim.diagnostic.enable(not vim.diagnostic.is_enabled())
+end, { desc = '[T]oggle [d]iagnostics' })
