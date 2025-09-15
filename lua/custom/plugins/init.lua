@@ -107,64 +107,121 @@ return {
     },
     {
         'lewis6991/satellite.nvim',
-        config = function()
-            require('satellite').setup {
-                current_only = false,
-                winblend = 50,
-                zindex = 40,
-                excluded_filetypes = {},
-                width = 2,
-                handlers = {
-                    cursor = {
-                        enable = true,
-                        -- Supports any number of symbols
-                        symbols = { '⎺', '⎻', '⎼', '⎽' },
-                        -- symbols = { '⎻', '⎼' }
-                        -- Highlights:
-                        -- - SatelliteCursor (default links to NonText
-                    },
-                    search = {
-                        enable = true,
-                        -- Highlights:
-                        -- - SatelliteSearch (default links to Search)
-                        -- - SatelliteSearchCurrent (default links to SearchCurrent)
-                    },
-                    diagnostic = {
-                        enable = true,
-                        signs = { '-', '=', '≡' },
-                        min_severity = vim.diagnostic.severity.HINT,
-                        -- Highlights:
-                        -- - SatelliteDiagnosticError (default links to DiagnosticError)
-                        -- - SatelliteDiagnosticWarn (default links to DiagnosticWarn)
-                        -- - SatelliteDiagnosticInfo (default links to DiagnosticInfo)
-                        -- - SatelliteDiagnosticHint (default links to DiagnosticHint)
-                    },
-                    gitsigns = {
-                        enable = true,
-                        signs = { -- can only be a single character (multibyte is okay)
-                            add = '│',
-                            change = '│',
-                            delete = '-',
-                        },
-                        -- Highlights:
-                        -- SatelliteGitSignsAdd (default links to GitSignsAdd)
-                        -- SatelliteGitSignsChange (default links to GitSignsChange)
-                        -- SatelliteGitSignsDelete (default links to GitSignsDelete)
-                    },
-                    marks = {
-                        enable = true,
-                        show_builtins = false, -- shows the builtin marks like [ ] < >
-                        key = 'm',
-                        -- Highlights:
-                        -- SatelliteMark (default links to Normal)
-                    },
-                    quickfix = {
-                        signs = { '-', '=', '≡' },
-                        -- Highlights:
-                        -- SatelliteQuickfix (default links to WarningMsg)
-                    },
-                },
-            }
-        end,
+    },
+    {
+        'mfussenegger/nvim-dap',
+        recommended = true,
+        desc = 'Debugging support. Requires language specific adapters to be configured. (see lang extras)',
+        dependencies = {
+            'nvim-neotest/nvim-nio',
+            'rcarriga/nvim-dap-ui',
+            -- virtual text for the debugger
+            {
+                'theHamsta/nvim-dap-virtual-text',
+                opts = {},
+            },
+            {
+                'mfussenegger/nvim-dap-python',
+                config = function()
+                    local dap = require 'dap'
+                    local dapui = require 'dapui'
+                    local dap_python = require 'dap-python'
+
+                    require('dapui').setup {}
+                    require('nvim-dap-virtual-text').setup {
+                        commented = true, -- Show virtual text alongside comment
+                    }
+
+                    dap_python.setup 'uv'
+
+                    vim.fn.sign_define('DapBreakpoint', {
+                        text = '',
+                        texthl = 'DiagnosticSignError',
+                        linehl = '',
+                        numhl = '',
+                    })
+
+                    vim.fn.sign_define('DapBreakpointRejected', {
+                        text = '', -- or "❌"
+                        texthl = 'DiagnosticSignError',
+                        linehl = '',
+                        numhl = '',
+                    })
+
+                    vim.fn.sign_define('DapStopped', {
+                        text = '', -- or "→"
+                        texthl = 'DiagnosticSignWarn',
+                        linehl = 'Visual',
+                        numhl = 'DiagnosticSignWarn',
+                    })
+
+                    -- vim.keymap.set('n', '<leader>b', dap.toggle_breakpoint)
+                    -- vim.keymap.set('n', '<F6>', dap.continue)
+
+                    vim.keymap.set('n', '<F6>', dap.step_over)
+                    vim.keymap.set('n', '<F7>', dap.step_into)
+                    vim.keymap.set('n', '<F8>', dap.step_out)
+                    vim.keymap.set('n', '<F9>', dap.step_back)
+                    vim.keymap.set('n', '<F10>', dap.restart)
+
+                    dap.listeners.before.attach.dapui_config = function()
+                        dapui.open()
+                    end
+                    dap.listeners.before.launch.dapui_config = function()
+                        dapui.open()
+                    end
+                    dap.listeners.before.event_terminated.dapui_config = function()
+                        dapui.close()
+                    end
+                    dap.listeners.before.event_exited.dapui_config = function()
+                        dapui.close()
+                    end
+                end,
+            },
+        },
+        keys = {
+            {
+                '<leader>b',
+                function()
+                    require('dap').toggle_breakpoint()
+                end,
+                desc = 'Toggle [B]reakpoint',
+            },
+            {
+                '<leader>dc',
+                function()
+                    require('dap').continue()
+                end,
+                desc = '[D]AP [c]ontinue/start',
+            },
+            {
+                '<leader>dr',
+                function()
+                    require('dap').run_to_cursor()
+                end,
+                desc = '[D]AP [r]un to cursor',
+            },
+            -- {
+            --     '<leader>dr',
+            --     function()
+            --         require('dap').repl.toggle()
+            --     end,
+            --     desc = 'Toggle REPL',
+            -- },
+            -- {
+            --     '<leader>ds',
+            --     function()
+            --         require('dap').session()
+            --     end,
+            --     desc = 'Session',
+            -- },
+            {
+                '<leader>dt',
+                function()
+                    require('dap').terminate()
+                end,
+                desc = '[D]AP [T]erminate',
+            },
+        },
     },
 }
