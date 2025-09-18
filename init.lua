@@ -86,6 +86,10 @@ P.S. You can delete this when you're done too. It's your config now! :)
 
 -- Set <space> as the leader key
 -- See `:help mapleader`
+--  NOTE: Disable netrw for nvim-tree:
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
@@ -743,11 +747,17 @@ require('lazy').setup({
             end,
             formatters_by_ft = {
                 lua = { 'stylua' },
+                json = { 'prettier' },
                 -- Conform can also run multiple formatters sequentially
                 -- python = { "isort", "black" },
                 --
                 -- You can use 'stop_after_first' to run the first available formatter from the list
                 -- javascript = { "prettierd", "prettier", stop_after_first = true },
+            },
+            formatters = {
+                prettier = {
+                    prepend_args = { '--tab-width', '4' },
+                },
             },
         },
     },
