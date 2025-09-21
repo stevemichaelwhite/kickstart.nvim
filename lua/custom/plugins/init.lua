@@ -224,24 +224,24 @@ return {
             },
         },
     },
-    {
-        'nvim-tree/nvim-tree.lua',
-        version = '*',
-        lazy = false,
-        dependencies = {
-            'nvim-tree/nvim-web-devicons',
-        },
-        config = function()
-            require('nvim-tree').setup {}
-        end,
-        keys = {
-            -- Toggle tree with <C-n>
-            { '<C-n>', '<cmd>NvimTreeToggle<cr>', desc = 'Toggle NvimTree' },
-
-            -- Focus tree with <leader>e
-            { '<leader>e', '<cmd>NvimTreeFocus<cr>', desc = 'Focus NvimTree' },
-        },
-    },
+    -- {
+    --     'nvim-tree/nvim-tree.lua',
+    --     version = '*',
+    --     lazy = false,
+    --     dependencies = {
+    --         { 'nvim-tree/nvim-web-devicons', opts = {}, lazy = false },
+    --     },
+    --     config = function()
+    --         require('nvim-tree').setup {}
+    --     end,
+    --     keys = {
+    --         -- Toggle tree with <C-n>
+    --         { '<C-n>', '<cmd>NvimTreeToggle<cr>', desc = 'Toggle NvimTree' },
+    --
+    --         -- Focus tree with <leader>e
+    --         { '<leader>e', '<cmd>NvimTreeFocus<cr>', desc = 'Focus NvimTree' },
+    --     },
+    -- },
     {
         '3rd/image.nvim',
         event = 'VeryLazy',
@@ -275,11 +275,105 @@ return {
                     filetypes = { 'norg' },
                 },
             },
-            max_width = nil,
-            max_height = nil,
-            max_width_window_percentage = nil,
-            max_height_window_percentage = 50,
+            max_width = 100,
+            max_height = 12,
+            max_width_window_percentage = math.huge,
+            max_height_window_percentage = math.huge,
+            window_overlap_clear_enabled = true,
+            window_overlap_clear_ft_ignore = { 'cmp_menu', 'cmp_docs', '' },
             kitty_method = 'normal',
         },
+    },
+    {
+        'benlubas/molten-nvim',
+        version = '^1.0.0', -- use version <2.0.0 to avoid breaking changes
+        build = ':UpdateRemotePlugins',
+        init = function()
+            -- this is an example, not a default. Please see the readme for more configuration options
+            vim.g.molten_output_win_max_height = 12
+            vim.g.molten_auto_open_output = false
+
+            -- this guide will be using image.nvim
+            -- Don't forget to setup and install the plugin if you want to view image outputs
+            vim.g.molten_image_provider = 'image.nvim'
+
+            -- optional, I like wrapping. works for virt text and the output window
+            vim.g.molten_wrap_output = true
+
+            -- Output as virtual text. Allows outputs to always be shown, works with images, but can
+            -- be buggy with longer images
+            vim.g.molten_virt_text_output = true
+
+            -- this will make it so the output shows up below the \`\`\` cell delimiter
+            vim.g.molten_virt_lines_off_by_1 = true
+        end,
+        config = function()
+            vim.keymap.set('n', '<localleader>e', ':MoltenEvaluateOperator<CR>', { desc = 'evaluate operator', silent = true })
+            vim.keymap.set('n', '<localleader>os', ':noautocmd MoltenEnterOutput<CR>', { desc = 'open output window', silent = true })
+        end,
+    },
+    {
+        'quarto-dev/quarto-nvim',
+        dependencies = {
+            {
+                'jmbuhr/otter.nvim',
+                dependencies = {
+                    'nvim-treesitter/nvim-treesitter',
+                },
+                config = function(_, opts)
+                    local otter = require 'otter'
+                    otter.setup(opts)
+
+                    -- Override K only for qmd buffers
+                    vim.api.nvim_create_autocmd('FileType', {
+                        pattern = 'quarto',
+                        callback = function(args)
+                            local buf = args.buf
+                            vim.keymap.set('n', 'K', function()
+                                local client0 = vim.lsp.get_clients({ bufnr = buf })[1]
+                                ---@class OtterTextDocumentPositionParams: lsp.TextDocumentPositionParams
+                                ---@field otter table|nil
+                                local params = vim.lsp.util.make_position_params(0, client0 and client0.offset_encoding or 'utf-16')
+                                -- local params = vim.lsp.util.make_position_params()
+                                params.otter = { lang = 'python' } -- force forward hover to basedpyright
+                                vim.lsp.buf_request(buf, 'textDocument/hover', params, vim.lsp.handlers.hover)
+                            end, { buffer = buf, desc = 'Hover (force Python via otter)' })
+                        end,
+                    })
+                end,
+                -- opts = { lsp = { hover = true } },
+            },
+        },
+        config = function()
+            local quarto = require 'quarto'
+            -- quarto.setup {}
+            quarto.setup {
+                lspFeatures = {
+                    -- NOTE: put whatever languages you want here:
+                    languages = { 'r', 'python', 'rust' },
+                    chunks = 'all',
+                    diagnostics = {
+                        enabled = true,
+                        triggers = { 'BufWritePost' },
+                    },
+                    completion = {
+                        enabled = true,
+                    },
+                },
+                keymap = {
+                    -- NOTE: setup your own keymaps:
+                    -- hover = 'K',
+                    -- definition = 'gd',
+                    -- rename = '<leader>rn',
+                    -- references = 'gr',
+                    -- format = '<leader>gf',
+                },
+                codeRunner = {
+                    enabled = true,
+                    default_method = 'molten',
+                },
+            }
+            vim.keymap.set('n', '<leader>qp', quarto.quartoPreview, { silent = true, noremap = true, desc = '[Q]uarto [p]review' })
+        end,
     },
 }

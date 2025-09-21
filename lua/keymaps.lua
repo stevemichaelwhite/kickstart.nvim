@@ -52,3 +52,10 @@ end, { desc = '[T]oggle diagnostic [V]irtual lines' })
 vim.keymap.set('n', '<leader>td', function()
     vim.diagnostic.enable(not vim.diagnostic.is_enabled())
 end, { desc = '[T]oggle [d]iagnostics' })
+
+function _G.print_attached_lsps()
+    local names = vim.tbl_map(function(c)
+        return c.name
+    end, vim.lsp.get_active_clients { bufnr = 0 })
+    print(table.concat(names, ', '))
+end
