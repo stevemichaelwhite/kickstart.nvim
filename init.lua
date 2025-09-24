@@ -196,6 +196,22 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     end,
 })
 
+-- blink/quarto hack
+-- local function show_docs_safe()
+--     local ft = vim.bo.filetype
+--     if ft == 'quarto' then
+--         local client = vim.lsp.get_clients({ bufnr = 0 })[1]
+--         if client then
+--             ---@class OtterTextDocumentPositionParams: lsp.TextDocumentPositionParams
+--             local params = vim.lsp.util.make_position_params(0, client and client.offset_encoding or 'utf-16')
+--             params.otter = { lang = 'python' }
+--             vim.lsp.buf_request(0, 'textDocument/hover', params, vim.lsp.handlers.hover)
+--             return
+--         end
+--     end
+--     require('blink.cmp').show_documentation()
+-- end
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
