@@ -111,6 +111,25 @@ return {
     {
         'mfussenegger/nvim-dap',
         recommended = true,
+        config = function(_, opts)
+            local dap = require 'dap'
+            local dap_python = require 'dap-python'
+
+            -- setup with your preferred python interpreter
+            dap_python.setup 'python'
+
+            -- add/override python configurations
+            dap.configurations.python = {
+                {
+                    type = 'python',
+                    request = 'launch',
+                    name = 'Debug (justMyCode = false)',
+                    program = '${file}', -- debug current file
+                    justMyCode = false, -- 👈 step into library code
+                    console = 'integratedTerminal',
+                },
+            }
+        end,
         desc = 'Debugging support. Requires language specific adapters to be configured. (see lang extras)',
         dependencies = {
             'nvim-neotest/nvim-nio',
