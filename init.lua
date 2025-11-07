@@ -876,6 +876,24 @@ require('lazy').setup({
                 },
             },
 
+            cmdline = {
+                enabled = true,
+                keymap = {
+                    preset = 'cmdline',
+                    ['<Right>'] = false,
+                    ['<Left>'] = false,
+                },
+                completion = {
+                    list = { selection = { preselect = false } },
+                    menu = {
+                        auto_show = function(ctx)
+                            return vim.fn.getcmdtype() == ':'
+                        end,
+                    },
+                    ghost_text = { enabled = true },
+                },
+            },
+
             snippets = { preset = 'luasnip' },
 
             -- Blink.cmp includes an optional, recommended rust fuzzy matcher,
@@ -911,6 +929,7 @@ require('lazy').setup({
             -- Like many other themes, this one has different styles, and you could load
             -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
             vim.cmd.colorscheme 'tokyonight-night'
+            -- vim.cmd.colorscheme 'tokyonight-day'
         end,
     },
 
@@ -949,28 +968,58 @@ require('lazy').setup({
             statusline.section_location = function()
                 return '%2l:%-2v'
             end
-
             -- ... and there is more!
             --  Check out: https://github.com/echasnovski/mini.nvim
         end,
     },
+
     { -- Highlight, edit, and navigate code
         'nvim-treesitter/nvim-treesitter',
         build = ':TSUpdate',
         main = 'nvim-treesitter.configs', -- Sets main module to use for opts
         -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
-        opts = {
-            ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
-            -- Autoinstall languages that are not installed
-            auto_install = true,
-            highlight = {
+        config = function()
+            require('nvim-treesitter.configs').setup {
+                ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+                -- Autoinstall languages that are not installed
+                auto_install = true,
+                highlight = {
+                    enable = true,
+                    -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
+                    --  If you are experiencing weird indenting issues, add the language to
+                    --  the list of additional_vim_regex_highlighting and disabled languages for indent.
+                    additional_vim_regex_highlighting = { 'ruby' },
+                },
+                indent = { enable = true, disable = { 'ruby' } },
+                incremental_selection = {
+                    enable = true,
+                    keymaps = {
+                        init_selection = 'gnn',
+                        node_incremental = 'grn',
+                        scope_incremental = 'grc',
+                        node_decremental = 'grm',
+                    },
+                },
+            }
+        end,
+        -- opts = {
+        -- },
+        textobjects = {
+            select = {
                 enable = true,
-                -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-                --  If you are experiencing weird indenting issues, add the language to
-                --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-                additional_vim_regex_highlighting = { 'ruby' },
+                lookahead = true, -- Optional: Enables lookahead for better text object detection
+                keymaps = {
+                    -- Example keymaps for common text objects
+                    ['af'] = '@function.outer',
+                    ['if'] = '@function.inner',
+                    ['ac'] = '@class.outer',
+                    ['ic'] = '@class.inner',
+                    ['aa'] = '@parameter.outer',
+                    ['ia'] = '@parameter.inner',
+                    -- Add more custom keymaps as desired
+                },
             },
-            indent = { enable = true, disable = { 'ruby' } },
+            -- Add other modules like 'move' or 'swap' if needed
         },
         -- There are additional nvim-treesitter modules that you can use to interact
         -- with nvim-treesitter. You should go explore a few and see what interests you:
