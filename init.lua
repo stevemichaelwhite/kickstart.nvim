@@ -784,31 +784,31 @@ require('lazy').setup({
         version = '1.*',
         dependencies = {
             -- Snippet Engine
-            {
-                'L3MON4D3/LuaSnip',
-                version = '2.*',
-                build = (function()
-                    -- Build Step is needed for regex support in snippets.
-                    -- This step is not supported in many windows environments.
-                    -- Remove the below condition to re-enable on windows.
-                    if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
-                        return
-                    end
-                    return 'make install_jsregexp'
-                end)(),
-                dependencies = {
-                    -- `friendly-snippets` contains a variety of premade snippets.
-                    --    See the README about individual language/framework/plugin snippets:
-                    --    https://github.com/rafamadriz/friendly-snippets
-                    -- {
-                    --   'rafamadriz/friendly-snippets',
-                    --   config = function()
-                    --     require('luasnip.loaders.from_vscode').lazy_load()
-                    --   end,
-                    -- },
-                },
-                opts = {},
-            },
+            -- {
+            --     'L3MON4D3/LuaSnip',
+            --     version = '2.*',
+            --     build = (function()
+            --         -- Build Step is needed for regex support in snippets.
+            --         -- This step is not supported in many windows environments.
+            --         -- Remove the below condition to re-enable on windows.
+            --         if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
+            --             return
+            --         end
+            --         return 'make install_jsregexp'
+            --     end)(),
+            --     dependencies = {
+            --         -- `friendly-snippets` contains a variety of premade snippets.
+            --         --    See the README about individual language/framework/plugin snippets:
+            --         --    https://github.com/rafamadriz/friendly-snippets
+            --         -- {
+            --         --   'rafamadriz/friendly-snippets',
+            --         --   config = function()
+            --         --     require('luasnip.loaders.from_vscode').lazy_load()
+            --         --   end,
+            --         -- },
+            --     },
+            --     opts = {},
+            -- },
             'folke/lazydev.nvim',
         },
         --- @module 'blink.cmp'
@@ -894,7 +894,7 @@ require('lazy').setup({
                 },
             },
 
-            snippets = { preset = 'luasnip' },
+            -- snippets = { preset = 'luasnip' },
 
             -- Blink.cmp includes an optional, recommended rust fuzzy matcher,
             -- which automatically downloads a prebuilt binary when enabled.
@@ -945,7 +945,7 @@ require('lazy').setup({
             --  - va)  - [V]isually select [A]round [)]paren
             --  - yinq - [Y]ank [I]nside [N]ext [Q]uote
             --  - ci'  - [C]hange [I]nside [']quote
-            require('mini.ai').setup { n_lines = 500 }
+            -- require('mini.ai').setup { n_lines = 500 }
 
             -- Add/delete/replace surroundings (brackets, quotes, etc.)
             --
@@ -953,6 +953,22 @@ require('lazy').setup({
             -- - sd'   - [S]urround [D]elete [']quotes
             -- - sr)'  - [S]urround [R]eplace [)] [']
             require('mini.surround').setup()
+            local ai = require 'mini.ai'
+
+            -- Generate Treesitter spec helper
+            local spec_ts = ai.gen_spec.treesitter
+
+            ai.setup {
+                custom_textobjects = {
+                    -- Function textobjects
+                    F = spec_ts { a = '@function.outer', i = '@function.inner' },
+                    -- Conditional + loop textobjects
+                    o = spec_ts {
+                        a = { '@conditional.outer', '@loop.outer' },
+                        i = { '@conditional.inner', '@loop.inner' },
+                    },
+                },
+            }
 
             -- Simple and easy statusline.
             --  You could remove this setup call if you don't like it,
@@ -994,33 +1010,14 @@ require('lazy').setup({
                 incremental_selection = {
                     enable = true,
                     keymaps = {
-                        init_selection = 'gnn',
-                        node_incremental = 'grn',
+                        init_selection = '<A-o>',
+                        node_incremental = '<A-o>',
                         scope_incremental = 'grc',
-                        node_decremental = 'grm',
+                        node_decremental = '<A-i>',
                     },
                 },
             }
         end,
-        -- opts = {
-        -- },
-        textobjects = {
-            select = {
-                enable = true,
-                lookahead = true, -- Optional: Enables lookahead for better text object detection
-                keymaps = {
-                    -- Example keymaps for common text objects
-                    ['af'] = '@function.outer',
-                    ['if'] = '@function.inner',
-                    ['ac'] = '@class.outer',
-                    ['ic'] = '@class.inner',
-                    ['aa'] = '@parameter.outer',
-                    ['ia'] = '@parameter.inner',
-                    -- Add more custom keymaps as desired
-                },
-            },
-            -- Add other modules like 'move' or 'swap' if needed
-        },
         -- There are additional nvim-treesitter modules that you can use to interact
         -- with nvim-treesitter. You should go explore a few and see what interests you:
         --
@@ -1028,11 +1025,9 @@ require('lazy').setup({
         --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
         --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
     },
-
     -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
     -- init.lua. If you want these files, they are in the repository, so you can just download them and
     -- place them in the correct locations.
-
     -- NOTE: Next step on your Neovim journey: Add/Configure additional plugins for Kickstart
     --
     --  Here are some example plugins that I've included in the Kickstart repository.
